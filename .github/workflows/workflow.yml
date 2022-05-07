@@ -32,3 +32,8 @@ jobs:
         run: go test -race -covermode=atomic -coverprofile=coverage.out -v ./...
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2
+  go-report-card:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger go report card
+        uses: creekorful/goreportcard-action@v1.0
