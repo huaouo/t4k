@@ -9,15 +9,17 @@ System_Boundary(backend, "T4K Backend") {
   Container(account, "Account Service", "", "")
   Container(video, "Video Service", "", "")
   Container(community, "Community Service", "", "Favorite, comment and follow")
+  Container(communityc, "Community Service Consumer", "", "")
 
   Container(rdbmss, "RDBMS Service", "", "")
   Container(caches, "Cache Service", "", "")
   Container(s3s, "Object Service", "", "")
-}
 
-ContainerDb_Ext(rdbms, "RDBMS", "Distributed TiDB", "")
-ContainerDb_Ext(cache, "Cache", "Distributed Redis", "")
-ContainerDb_Ext(s3, "Object Storage", "Distributed MinIO", "")
+  ContainerQueue(queue, "Message Queue", "Kafka", "")
+  ContainerDb(rdbms, "RDBMS", "Distributed TiDB", "")
+  ContainerDb(cache, "Cache", "Distributed Redis", "")
+  ContainerDb(s3, "Object Storage", "Distributed MinIO", "")
+}
 
 Rel(client, gateway, "Request", "HTTPS")
 Rel(gateway, authn, "Invoke", "HTTP")
@@ -30,7 +32,9 @@ Rel(authn, caches, "Invoke", "gRPC")
 Rel(account, rdbmss, "Invoke", "gRPC")
 Rel(video, rdbmss, "Invoke", "gRPC")
 Rel(video, s3s, "Invoke", "HTTP")
-Rel(community, rdbmss, "Invoke", "gRPC")
+Rel(community, queue, "Produce", "TCP")
+Rel(queue, communityc, "Consume", "TCP")
+Rel(communityc, rdbmss, "Invoke", "gRPC")
 Rel(rdbmss, rdbms, "Read/Write", "TCP")
 Rel(caches, cache, "Read/Write", "TCP")
 Rel(s3s, s3, "Read/Write", "HTTP")
