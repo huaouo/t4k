@@ -11,7 +11,6 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
-	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -23,8 +22,8 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AccountClient interface {
-	CreateAccount(ctx context.Context, in *CreateAccountRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	Authenticate(ctx context.Context, in *AuthenticateRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	CreateAccount(ctx context.Context, in *AuthNRequest, opts ...grpc.CallOption) (*AuthNResponse, error)
+	Authenticate(ctx context.Context, in *AuthNRequest, opts ...grpc.CallOption) (*AuthNResponse, error)
 }
 
 type accountClient struct {
@@ -35,8 +34,8 @@ func NewAccountClient(cc grpc.ClientConnInterface) AccountClient {
 	return &accountClient{cc}
 }
 
-func (c *accountClient) CreateAccount(ctx context.Context, in *CreateAccountRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	out := new(emptypb.Empty)
+func (c *accountClient) CreateAccount(ctx context.Context, in *AuthNRequest, opts ...grpc.CallOption) (*AuthNResponse, error) {
+	out := new(AuthNResponse)
 	err := c.cc.Invoke(ctx, "/Account/CreateAccount", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -44,8 +43,8 @@ func (c *accountClient) CreateAccount(ctx context.Context, in *CreateAccountRequ
 	return out, nil
 }
 
-func (c *accountClient) Authenticate(ctx context.Context, in *AuthenticateRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	out := new(emptypb.Empty)
+func (c *accountClient) Authenticate(ctx context.Context, in *AuthNRequest, opts ...grpc.CallOption) (*AuthNResponse, error) {
+	out := new(AuthNResponse)
 	err := c.cc.Invoke(ctx, "/Account/Authenticate", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -57,8 +56,8 @@ func (c *accountClient) Authenticate(ctx context.Context, in *AuthenticateReques
 // All implementations must embed UnimplementedAccountServer
 // for forward compatibility
 type AccountServer interface {
-	CreateAccount(context.Context, *CreateAccountRequest) (*emptypb.Empty, error)
-	Authenticate(context.Context, *AuthenticateRequest) (*emptypb.Empty, error)
+	CreateAccount(context.Context, *AuthNRequest) (*AuthNResponse, error)
+	Authenticate(context.Context, *AuthNRequest) (*AuthNResponse, error)
 	mustEmbedUnimplementedAccountServer()
 }
 
@@ -66,10 +65,10 @@ type AccountServer interface {
 type UnimplementedAccountServer struct {
 }
 
-func (UnimplementedAccountServer) CreateAccount(context.Context, *CreateAccountRequest) (*emptypb.Empty, error) {
+func (UnimplementedAccountServer) CreateAccount(context.Context, *AuthNRequest) (*AuthNResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateAccount not implemented")
 }
-func (UnimplementedAccountServer) Authenticate(context.Context, *AuthenticateRequest) (*emptypb.Empty, error) {
+func (UnimplementedAccountServer) Authenticate(context.Context, *AuthNRequest) (*AuthNResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Authenticate not implemented")
 }
 func (UnimplementedAccountServer) mustEmbedUnimplementedAccountServer() {}
@@ -86,7 +85,7 @@ func RegisterAccountServer(s grpc.ServiceRegistrar, srv AccountServer) {
 }
 
 func _Account_CreateAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateAccountRequest)
+	in := new(AuthNRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -98,13 +97,13 @@ func _Account_CreateAccount_Handler(srv interface{}, ctx context.Context, dec fu
 		FullMethod: "/Account/CreateAccount",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccountServer).CreateAccount(ctx, req.(*CreateAccountRequest))
+		return srv.(AccountServer).CreateAccount(ctx, req.(*AuthNRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Account_Authenticate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AuthenticateRequest)
+	in := new(AuthNRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -116,7 +115,7 @@ func _Account_Authenticate_Handler(srv interface{}, ctx context.Context, dec fun
 		FullMethod: "/Account/Authenticate",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccountServer).Authenticate(ctx, req.(*AuthenticateRequest))
+		return srv.(AccountServer).Authenticate(ctx, req.(*AuthNRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

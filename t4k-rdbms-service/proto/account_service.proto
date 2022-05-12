@@ -1,18 +1,16 @@
 syntax = "proto3";
 option go_package = "./rpc";
-import "google/protobuf/empty.proto";
 
 service Account {
-  rpc CreateAccount(CreateAccountRequest) returns (google.protobuf.Empty) {}
-  rpc Authenticate(AuthenticateRequest) returns (google.protobuf.Empty) {}
+  rpc CreateAccount(AuthNRequest) returns (AuthNResponse) {}
+  rpc Authenticate(AuthNRequest) returns (AuthNResponse) {}
 }
 
-message CreateAccountRequest {
+message AuthNRequest {
   string name = 1;
   string password = 2;
 }
 
-message AuthenticateRequest {
-  string name = 1;
-  string password = 2;
+message AuthNResponse {
+  uint64 user_id = 1;
 }

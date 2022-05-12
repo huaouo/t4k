@@ -7,6 +7,7 @@ var (
 	ErrUserAlreadyExist  = errors.New("user already exist")
 	ErrUserNotExist      = errors.New("user not exist")
 	ErrPasswordIncorrect = errors.New("password incorrect")
+	ErrSignJwt           = errors.New("cannot sign jwt")
 )
 
 var (

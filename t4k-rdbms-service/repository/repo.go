@@ -9,41 +9,41 @@ import (
 )
 
 type Account struct {
-	ID        uint   `gorm:"primary_key"`
+	Id        uint64 `gorm:"primary_key"`
 	Name      string `gorm:"index:idx_name,unique"`
 	Password  string
 	CreatedAt time.Time
 }
 
 type Follow struct {
-	UserID    uint      `gorm:"index:idx_user_id"`
-	ToUserID  uint      `gorm:"index:idx_to_user_id"`
+	UserId    uint64    `gorm:"index:idx_user_id"`
+	ToUserId  uint64    `gorm:"index:idx_to_user_id"`
 	CreatedAt time.Time `gorm:"index:idx_created_at"`
 }
 
 type Video struct {
-	ID        uint `gorm:"primary_key"`
-	PlayURL   string
-	CoverURL  string
+	Id        uint64 `gorm:"primary_key"`
+	PlayUrl   string
+	CoverUrl  string
 	CreatedAt time.Time `gorm:"index:idx_created_at"`
 }
 
 type Favorite struct {
-	UserID    uint      `gorm:"index:idx_user_id"`
-	VideoID   uint      `gorm:"index:idx_video_id"`
+	UserId    uint64    `gorm:"index:idx_user_id"`
+	VideoId   uint64    `gorm:"index:idx_video_id"`
 	CreatedAt time.Time `gorm:"index:idx_created_at"`
 }
 
 type Comment struct {
-	ID        int `gorm:"primary_key"`
-	UserID    int `gorm:"index:idx_user_id"`
-	VideoID   int `gorm:"index:idx_video_id"`
+	Id        uint64 `gorm:"primary_key"`
+	UserId    uint64 `gorm:"index:idx_user_id"`
+	VideoId   uint64 `gorm:"index:idx_video_id"`
 	Content   string
 	CreatedAt time.Time `gorm:"index:idx_created_at"`
 }
 
 func InitDB() *gorm.DB {
-	dsn := os.Getenv("dsn")
+	dsn := os.Getenv("RDBMS_DSN")
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatalf("Failed to connect database: %v\n", err)

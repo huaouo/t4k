@@ -5,7 +5,6 @@ Person(client, "Android Client")
 
 System_Boundary(backend, "T4K Backend") {
   Container(gateway, "API Gateway", "Istio Ingress", "")
-  Container(authn, "Authentication Service", "", "")
   Container(account, "Account Service", "", "")
   Container(video, "Video Service", "", "")
   Container(community, "Community Service", "", "Favorite, comment and follow")
@@ -22,13 +21,10 @@ System_Boundary(backend, "T4K Backend") {
 }
 
 Rel(client, gateway, "Request", "HTTPS")
-Rel(gateway, authn, "Invoke", "HTTP")
-Rel(gateway, account, "Forward", "HTTP")
+Rel(gateway, account, "Invoke/Forward", "HTTP")
 Rel(gateway, video, "Forward", "HTTP")
 Rel(gateway, community, "Forward", "HTTP")
 Rel(gateway, s3s, "Forward", "HTTP")
-Rel(authn, rdbmss, "Invoke", "gRPC")
-Rel(authn, caches, "Invoke", "gRPC")
 Rel(account, rdbmss, "Invoke", "gRPC")
 Rel(video, rdbmss, "Invoke", "gRPC")
 Rel(video, s3s, "Invoke", "HTTP")

@@ -6,10 +6,12 @@ import (
 	"google.golang.org/grpc"
 	"log"
 	"net"
+	"os"
 )
 
 func main() {
-	listener, err := net.Listen("tcp", ":8888")
+	port := os.Getenv("RDBMS_SERVICE_LISTEN_PORT")
+	listener, err := net.Listen("tcp", ":"+port)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
