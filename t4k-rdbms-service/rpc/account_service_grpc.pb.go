@@ -24,6 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 type AccountClient interface {
 	CreateAccount(ctx context.Context, in *AuthNRequest, opts ...grpc.CallOption) (*AuthNResponse, error)
 	Authenticate(ctx context.Context, in *AuthNRequest, opts ...grpc.CallOption) (*AuthNResponse, error)
+	GetUserInfo(ctx context.Context, in *InfoRequest, opts ...grpc.CallOption) (*InfoResponse, error)
 }
 
 type accountClient struct {
@@ -52,12 +53,22 @@ func (c *accountClient) Authenticate(ctx context.Context, in *AuthNRequest, opts
 	return out, nil
 }
 
+func (c *accountClient) GetUserInfo(ctx context.Context, in *InfoRequest, opts ...grpc.CallOption) (*InfoResponse, error) {
+	out := new(InfoResponse)
+	err := c.cc.Invoke(ctx, "/Account/GetUserInfo", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AccountServer is the server API for Account service.
 // All implementations must embed UnimplementedAccountServer
 // for forward compatibility
 type AccountServer interface {
 	CreateAccount(context.Context, *AuthNRequest) (*AuthNResponse, error)
 	Authenticate(context.Context, *AuthNRequest) (*AuthNResponse, error)
+	GetUserInfo(context.Context, *InfoRequest) (*InfoResponse, error)
 	mustEmbedUnimplementedAccountServer()
 }
 
@@ -70,6 +81,9 @@ func (UnimplementedAccountServer) CreateAccount(context.Context, *AuthNRequest) 
 }
 func (UnimplementedAccountServer) Authenticate(context.Context, *AuthNRequest) (*AuthNResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Authenticate not implemented")
+}
+func (UnimplementedAccountServer) GetUserInfo(context.Context, *InfoRequest) (*InfoResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserInfo not implemented")
 }
 func (UnimplementedAccountServer) mustEmbedUnimplementedAccountServer() {}
 
@@ -120,6 +134,24 @@ func _Account_Authenticate_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Account_GetUserInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(InfoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountServer).GetUserInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/Account/GetUserInfo",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountServer).GetUserInfo(ctx, req.(*InfoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Account_ServiceDesc is the grpc.ServiceDesc for Account service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -134,6 +166,10 @@ var Account_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Authenticate",
 			Handler:    _Account_Authenticate_Handler,
+		},
+		{
+			MethodName: "GetUserInfo",
+			Handler:    _Account_GetUserInfo_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

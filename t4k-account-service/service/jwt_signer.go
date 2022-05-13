@@ -30,7 +30,7 @@ func NewJwtSigner() JwtSigner {
 func (s *JwtSigner) Sign(userId uint64) (string, error) {
 	now := time.Now().UTC()
 	claims := make(jwt.MapClaims)
-	claims["uid"] = userId
+	claims[common.JwtPayloadUserIdName] = userId
 	claims["exp"] = now.Add(time.Hour * 24 * 7).Unix()
 	claims["iat"] = now.Unix()
 	claims["nbf"] = now.Unix()

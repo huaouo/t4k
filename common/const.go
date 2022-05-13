@@ -14,3 +14,8 @@ var (
 	StatusSuccess = 0
 	StatusFailure = 1
 )
+
+var (
+	ExtractedJwtPayloadName = "Jwt-Payload"
+	JwtPayloadUserIdName    = "uid"
+)

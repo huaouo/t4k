@@ -4,6 +4,7 @@ option go_package = "./rpc";
 service Account {
   rpc CreateAccount(AuthNRequest) returns (AuthNResponse) {}
   rpc Authenticate(AuthNRequest) returns (AuthNResponse) {}
+  rpc GetUserInfo(InfoRequest) returns (InfoResponse) {}
 }
 
 message AuthNRequest {
@@ -13,4 +14,16 @@ message AuthNRequest {
 
 message AuthNResponse {
   uint64 user_id = 1;
+}
+
+message InfoRequest {
+  uint64 sign_in_user_id = 1;
+  uint64 user_id = 2;
+}
+
+message InfoResponse {
+  string name = 1;
+  uint64 follow_count = 2;
+  uint64 follower_count = 3;
+  bool is_follow = 4;
 }

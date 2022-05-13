@@ -20,6 +20,7 @@ func main() {
 	}
 	router.POST("/douyin/user/register/", accountHandler.SignUp)
 	router.POST("/douyin/user/login/", accountHandler.SignIn)
+	router.GET("/douyin/user/", accountHandler.Info)
 
 	port := os.Getenv("ACCOUNT_SERVICE_LISTEN_PORT")
 	err := router.Run(":" + port)
