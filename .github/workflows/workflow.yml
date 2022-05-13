@@ -12,7 +12,7 @@ jobs:
   check-format:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: editorconfig-checker/action-editorconfig-checker@main
       - name: Check editorconfig
         run: editorconfig-checker
@@ -37,3 +37,32 @@ jobs:
     steps:
       - name: Trigger go report card
         uses: creekorful/goreportcard-action@v1.0
+  build-image:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build and push t4k-account-service
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: t4k-account-service/Dockerfile
+          push: true
+          tags: huaouo/t4k-account-service:latest
+      - name: Build and push t4k-rdbms-service
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: t4k-rdbms-service/Dockerfile
+          push: true
+          tags: huaouo/t4k-rdbms-service:latest
+
