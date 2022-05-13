@@ -12,8 +12,10 @@ jobs:
   check-format:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: editorconfig-checker/action-editorconfig-checker@main
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Get editorconfig-checker
+        uses: editorconfig-checker/action-editorconfig-checker@main
       - name: Check editorconfig
         run: editorconfig-checker
       - name: Check gofmt
@@ -21,7 +23,8 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v3
       - name: Set up Go
         uses: actions/setup-go@v3
         with:
@@ -65,4 +68,3 @@ jobs:
           file: t4k-rdbms-service/Dockerfile
           push: true
           tags: huaouo/t4k-rdbms-service:latest
-

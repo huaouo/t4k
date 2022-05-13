@@ -9,4 +9,4 @@ Guess what the project's name means. :P
 
 ## Project Architecture
 
-![](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/huaouo/t4k/master/doc/architecture.puml)
+<img src="https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/huaouo/t4k/master/doc/architecture.puml" width="500" alt="project architecture">
