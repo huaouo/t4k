@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/huaouo/t4k/t4k-fake-api-gateway/handler"
-	"github.com/huaouo/t4k/t4k-fake-api-gateway/service"
+	"github.com/huaouo/t4k/t4k-fake-api-gateway/util"
 	"log"
 	"net/http"
 	"os"
@@ -11,9 +11,9 @@ import (
 func main() {
 	port := os.Getenv("FAKE_API_SERVER_LISTEN_PORT")
 	err := http.ListenAndServe(":"+port, &handler.ApiGatewayHandler{
-		Verifier:           service.NewJwtVerifier(),
-		RouteTable:         service.NewRouteTable(),
-		JwtVerifyWhitelist: service.NewJwtVerifyWhitelist(),
+		Verifier:           util.NewJwtVerifier(),
+		RouteTable:         util.NewRouteTable(),
+		JwtVerifyWhitelist: util.NewJwtVerifyWhitelist(),
 	})
 	if err != nil {
 		log.Fatalf("failed to run: %v", err)

@@ -18,6 +18,7 @@ func main() {
 	grpcServer := grpc.NewServer()
 	db := repository.InitDB()
 	rpc.RegisterAccountServer(grpcServer, &rpc.AccountHandler{DB: db})
+	rpc.RegisterVideoServer(grpcServer, &rpc.VideoHandler{DB: db})
 	err = grpcServer.Serve(listener)
 	if err != nil {
 		log.Fatalf("failed to serve: %v", err)

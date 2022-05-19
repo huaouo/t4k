@@ -1,14 +1,16 @@
-package service
+package util
 
 import "os"
 
 func NewRouteTable() map[string]string {
 	accountService := os.Getenv("ACCOUNT_SERVICE_ADDR") + ":" + os.Getenv("ACCOUNT_SERVICE_LISTEN_PORT")
+	videoService := os.Getenv("VIDEO_SERVICE_ADDR") + ":" + os.Getenv("VIDEO_SERVICE_LISTEN_PORT")
 
 	return map[string]string{
-		"/douyin/user/register/": accountService,
-		"/douyin/user/login/":    accountService,
-		"/douyin/user/":          accountService,
+		"/douyin/user/register/":  accountService,
+		"/douyin/user/login/":     accountService,
+		"/douyin/user/":           accountService,
+		"/douyin/publish/action/": videoService,
 	}
 }
 

@@ -68,3 +68,10 @@ jobs:
           file: t4k-rdbms-service/Dockerfile
           push: true
           tags: huaouo/t4k-rdbms-service:latest
+      - name: Build and push t4k-object-service
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: t4k-object-service/Dockerfile
+          push: true
+          tags: huaouo/t4k-object-service:latest

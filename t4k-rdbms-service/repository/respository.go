@@ -23,8 +23,9 @@ type Follow struct {
 
 type Video struct {
 	Id        uint64 `gorm:"primary_key"`
-	PlayUrl   string
-	CoverUrl  string
+	UserId    uint64
+	ObjectId  string
+	Title     string
 	CreatedAt time.Time `gorm:"index:idx_created_at"`
 }
 

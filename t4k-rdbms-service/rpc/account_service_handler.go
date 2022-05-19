@@ -21,7 +21,7 @@ type AccountHandler struct {
 	DB *gorm.DB
 }
 
-func (h *AccountHandler) CreateAccount(ctx context.Context, req *AuthNRequest) (*AuthNResponse, error) {
+func (h *AccountHandler) Create(ctx context.Context, req *AuthNRequest) (*AuthNResponse, error) {
 	var exists bool
 	err := h.DB.Model(&repository.Account{}).
 		Select("count(1) > 0").

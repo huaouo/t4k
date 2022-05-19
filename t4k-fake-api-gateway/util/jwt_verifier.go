@@ -1,4 +1,4 @@
-package service
+package util
 
 import (
 	"crypto/ecdsa"
@@ -34,19 +34,19 @@ func (s *JwtVerifier) VerifyAndEncode(tokenStr string) (string, error) {
 	})
 	if err != nil {
 		log.Printf("failed to parse JWT token: %v", err)
-		return "", common.ErrVerifiyJwt
+		return "", common.ErrVerifyJwt
 	}
 
 	err = token.Claims.Valid()
 	if err != nil {
 		log.Printf("failed to verify JWT token: %v", err)
-		return "", common.ErrVerifiyJwt
+		return "", common.ErrVerifyJwt
 	}
 
 	jsonBytes, err := json.Marshal(token.Claims.(jwt.MapClaims))
 	if err != nil {
 		log.Printf("failed to encode JWT claims: %v", err)
-		return "", common.ErrVerifiyJwt
+		return "", common.ErrVerifyJwt
 	}
 
 	return base64.StdEncoding.EncodeToString(jsonBytes), nil

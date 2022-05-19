@@ -2,13 +2,11 @@ package handler
 
 import (
 	"context"
-	"encoding/base64"
-	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/huaouo/t4k/common"
 	"github.com/huaouo/t4k/t4k-account-service/model/request"
 	"github.com/huaouo/t4k/t4k-account-service/model/response"
-	"github.com/huaouo/t4k/t4k-account-service/service"
+	"github.com/huaouo/t4k/t4k-account-service/util"
 	"github.com/huaouo/t4k/t4k-rdbms-service/rpc"
 	"google.golang.org/grpc"
 	"log"
@@ -17,7 +15,7 @@ import (
 
 type AccountHandler struct {
 	AccountClient rpc.AccountClient
-	Signer        service.JwtSigner
+	Signer        util.JwtSigner
 }
 
 func (h *AccountHandler) Sign(c *gin.Context,
@@ -60,7 +58,7 @@ func (h *AccountHandler) Sign(c *gin.Context,
 }
 
 func (h *AccountHandler) SignUp(c *gin.Context) {
-	h.Sign(c, h.AccountClient.CreateAccount)
+	h.Sign(c, h.AccountClient.Create)
 }
 
 func (h *AccountHandler) SignIn(c *gin.Context) {
@@ -79,26 +77,13 @@ func (h *AccountHandler) Info(c *gin.Context) {
 		return
 	}
 
-	b64JwtPayload := c.GetHeader(common.ExtractedJwtPayloadName)
-	jwtPayload, err := base64.StdEncoding.DecodeString(b64JwtPayload)
+	signInUserId, err := common.ExtractSignInUserId(c)
 	if err != nil {
-		log.Printf("cannot decode extracted jwt header: %v", err)
 		resp.StatusCode = common.StatusFailure
-		resp.StatusMsg = common.ErrInternal.Error()
+		resp.StatusMsg = err.Error()
 		c.JSON(http.StatusOK, resp)
 		return
 	}
-
-	m := make(map[string]interface{})
-	err = json.Unmarshal(jwtPayload, &m)
-	if err != nil {
-		log.Printf("cannot unmarshal jwt json: %v", err)
-		resp.StatusCode = common.StatusFailure
-		resp.StatusMsg = common.ErrInternal.Error()
-		c.JSON(http.StatusOK, resp)
-		return
-	}
-	signInUserId := uint64(m[common.JwtPayloadUserIdName].(float64))
 
 	infoResp, err := h.AccountClient.GetUserInfo(context.TODO(), &rpc.InfoRequest{
 		SignInUserId: signInUserId,

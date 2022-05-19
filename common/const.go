@@ -8,15 +8,23 @@ var (
 	ErrUserNotExist      = errors.New("user not exist")
 	ErrPasswordIncorrect = errors.New("password incorrect")
 	ErrSignJwt           = errors.New("cannot sign jwt")
-	ErrVerifiyJwt        = errors.New("failed to verify jwt")
+	ErrVerifyJwt         = errors.New("failed to verify jwt")
 )
 
-var (
+const (
 	StatusSuccess = 0
 	StatusFailure = 1
 )
 
-var (
+const (
 	ExtractedJwtPayloadName = "Jwt-Payload"
 	JwtPayloadUserIdName    = "uid"
+)
+
+const (
+	S3CoverBucketName            = "t4k-cover"
+	S3VideoBucketName            = "t4k-video"
+	ObjectServiceCoverPathPrefix = "/s3/cover/"
+	ObjectServiceVideoPathPrefix = "/s3/video/"
+	ObjectServiceFilenameParam   = "filename"
 )

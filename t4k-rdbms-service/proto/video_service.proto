@@ -1,0 +1,15 @@
+syntax = "proto3";
+option go_package = "./rpc";
+
+service Video {
+  rpc Create(CreateVideoRequest) returns (CreateVideoResponse) {}
+}
+
+message CreateVideoRequest {
+  uint64 user_id = 1;
+  string title = 2;
+}
+
+message CreateVideoResponse {
+  string object_id = 1;
+}

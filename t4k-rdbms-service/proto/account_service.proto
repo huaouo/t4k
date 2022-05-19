@@ -2,7 +2,7 @@ syntax = "proto3";
 option go_package = "./rpc";
 
 service Account {
-  rpc CreateAccount(AuthNRequest) returns (AuthNResponse) {}
+  rpc Create(AuthNRequest) returns (AuthNResponse) {}
   rpc Authenticate(AuthNRequest) returns (AuthNResponse) {}
   rpc GetUserInfo(InfoRequest) returns (InfoResponse) {}
 }
