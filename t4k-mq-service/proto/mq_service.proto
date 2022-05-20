@@ -1,0 +1,23 @@
+syntax = "proto3";
+option go_package = "./rpc";
+
+service Mq {
+  rpc Publish(stream PubRequest) returns (stream Empty) {}
+  rpc Subscribe(stream SubRequestOrAck) returns (stream SubResponse) {}
+}
+
+message PubRequest {
+  string queue_name = 1;
+  bytes content = 2;
+}
+
+message Empty {
+}
+
+message SubRequestOrAck {
+  optional string queue_name = 1;
+}
+
+message SubResponse {
+  bytes content = 1;
+}

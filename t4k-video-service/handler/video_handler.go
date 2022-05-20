@@ -4,7 +4,9 @@ import (
 	"context"
 	"github.com/gin-gonic/gin"
 	"github.com/huaouo/t4k/common"
+	mq "github.com/huaouo/t4k/t4k-mq-service/rpc"
 	"github.com/huaouo/t4k/t4k-rdbms-service/rpc"
+	rdbms "github.com/huaouo/t4k/t4k-rdbms-service/rpc"
 	"github.com/huaouo/t4k/t4k-video-service/model/request"
 	"github.com/huaouo/t4k/t4k-video-service/model/response"
 	"log"
@@ -12,9 +14,10 @@ import (
 )
 
 type VideoHandler struct {
-	VideoClient           rpc.VideoClient
-	ObjectServiceEndpoint string
+	VideoClient           rdbms.VideoClient
+	MqClient              mq.MqClient
 	HttpClient            http.Client
+	ObjectServiceEndpoint string
 }
 
 func (h *VideoHandler) Publish(c *gin.Context) {
@@ -37,7 +40,7 @@ func (h *VideoHandler) Publish(c *gin.Context) {
 		Title:  req.Title,
 	})
 	if err != nil {
-		h.handleError(c, err, "", "")
+		h.handleError(c, err, "failed to create item in rdbms", "")
 		return
 	}
 
@@ -65,6 +68,19 @@ func (h *VideoHandler) Publish(c *gin.Context) {
 		resp.StatusMsg = common.ErrInternal.Error()
 		c.JSON(http.StatusOK, resp)
 		return
+	}
+
+	pubClient, err := h.MqClient.Publish(context.TODO())
+	if err != nil {
+		log.Printf("failed to initialize MQ service publish client: %v", err)
+	} else {
+		err = pubClient.Send(&mq.PubRequest{
+			QueueName: common.MqCoverQueueName,
+			Content:   []byte(rpcResp.GetObjectId()),
+		})
+		if err != nil {
+			log.Printf("failed to publish cover generating task: %v", err)
+		}
 	}
 
 	resp.StatusCode = common.StatusSuccess

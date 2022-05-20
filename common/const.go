@@ -28,3 +28,7 @@ const (
 	ObjectServiceVideoPathPrefix = "/s3/video/"
 	ObjectServiceFilenameParam   = "filename"
 )
+
+const (
+	MqCoverQueueName = "cover"
+)
