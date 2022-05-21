@@ -9,19 +9,19 @@ metadata:
   name: t4k-config
   namespace: t4k
 data:
-  PRIVATE_KEY_PATH: /key.pem
-  PUBLIC_KEY_PATH: /pub.pem
-  RDBMS_SERVICE_ADDR: rdbms-service.t4k.svc.local
-  RDBMS_SERVICE_LISTEN_PORT: 80
-  ACCOUNT_SERVICE_ADDR: account-service.t4k.svc.local
-  ACCOUNT_SERVICE_LISTEN_PORT: 80
-  VIDEO_SERVICE_ADDR: video-service.t4k.svc.local
-  VIDEO_SERVICE_LISTEN_PORT: 80
-  OBJECT_SERVICE_ADDR: object-service.t4k.svc.local
-  OBJECT_SERVICE_LISTEN_PORT: 80
-  MQ_SERVICE_ADDR: object-service.t4k.svc.local
-  MQ_SERVICE_LISTEN_PORT: 80
-  FAKE_API_SERVER_LISTEN_PORT: 80
+  PRIVATE_KEY_PATH: /cert/key.pem
+  PUBLIC_KEY_PATH: /cert/pub.pem
+  RDBMS_SERVICE_ADDR: rdbms-service.t4k.svc.cluster.local
+  RDBMS_SERVICE_LISTEN_PORT: "80"
+  ACCOUNT_SERVICE_ADDR: account-service.t4k.svc.cluster.local
+  ACCOUNT_SERVICE_LISTEN_PORT: "80"
+  VIDEO_SERVICE_ADDR: video-service.t4k.svc.cluster.local
+  VIDEO_SERVICE_LISTEN_PORT: "80"
+  OBJECT_SERVICE_ADDR: object-service.t4k.svc.cluster.local
+  OBJECT_SERVICE_LISTEN_PORT: "80"
+  MQ_SERVICE_ADDR: mq-service.t4k.svc.cluster.local
+  MQ_SERVICE_LISTEN_PORT: "80"
+  FAKE_API_SERVER_LISTEN_PORT: "80"
 ---
 apiVersion: v1
 kind: Secret
@@ -29,11 +29,11 @@ metadata:
   name: t4k-secret
   namespace: t4k
 data:
-  RDBMS_DSN: dDRrJTNBQHNxbEFkbWluMjAyMkB0Y3AlMjh0aWRiLXRpZGIudGlkYi1jbHVzdGVyLnN2Yy5sb2NhbCUzQTQwMDAlMjkvdDRrJTNGY2hhcnNldCUzRHV0ZjhtYjQlMjZwYXJzZVRpbWUlM0RUcnVl
-  AMQP_URL: YW1xcCUzQS8vdDRrJTNBQG1xQWRtaW4yMDIyQHJhYmJpdG1xLnJhYmJpdG1xLnN2Yy5sb2NhbCUzQTU2NzIvdDRr
+  RDBMS_DSN: dDRrOkBzcWxBZG1pbjIwMjJAdGNwKHRpZGItdGlkYi50aWRiLWNsdXN0ZXIuc3ZjLmNsdXN0ZXIubG9jYWw6NDAwMCkvdDRrP2NoYXJzZXQ9dXRmOG1iNCZwYXJzZVRpbWU9VHJ1ZQ==
+  AMQP_URL: YW1xcDovL3Q0azpAbXFBZG1pbjIwMjJAcmFiYml0bXEucmFiYml0bXEuc3ZjLmNsdXN0ZXIubG9jYWw6NTY3Mi90NGs=
   S3_ACCESS_KEY: VEhuTlNVZVRWTlVLSnd3NQ==
   S3_SECRET_KEY: N2RCVlpXMjdMT3UwMnhtTHVlZVpUaXpYZ1ZsREtKUEU=
-  S3_ENDPOINT: bWluaW8tMTY1MTgxNTQ2Ni5taW5pby5zdmMubG9jYWwlM0E5MDAw
+  S3_ENDPOINT: bWluaW8tMTY1MTgxNTQ2Ni5taW5pby5zdmMuY2x1c3Rlci5sb2NhbDo5MDAw
   S3_REGION: dXMtZWFzdC0x
 type: Opaque
 ---
@@ -76,7 +76,7 @@ spec:
                 name: t4k-secret
           volumeMounts:
             - name: cert
-              mountPath: "/"
+              mountPath: "/cert"
               readOnly: true
       volumes:
         - name: cert
@@ -165,7 +165,7 @@ spec:
                 name: t4k-secret
           volumeMounts:
             - name: cert
-              mountPath: "/"
+              mountPath: "/cert"
               readOnly: true
       volumes:
         - name: cert
