@@ -13,6 +13,7 @@ type MqHandler struct {
 
 func (h *MqHandler) Publish(srv Mq_PublishServer) error {
 	ch, err := h.Conn.Channel()
+	defer ch.Close()
 	if err != nil {
 		log.Printf("failed to create new mq channel: %v", err)
 		return common.ErrInternal
@@ -42,6 +43,7 @@ func (h *MqHandler) Publish(srv Mq_PublishServer) error {
 
 func (h *MqHandler) Subscribe(srv Mq_SubscribeServer) error {
 	ch, err := h.Conn.Channel()
+	defer ch.Close()
 	if err != nil {
 		log.Printf("failed to create new mq channel: %v", err)
 		return common.ErrInternal

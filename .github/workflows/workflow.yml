@@ -75,3 +75,24 @@ jobs:
           file: t4k-object-service/Dockerfile
           push: true
           tags: huaouo/t4k-object-service:latest
+      - name: Build and push t4k-mq-service
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: t4k-mq-service/Dockerfile
+          push: true
+          tags: huaouo/t4k-mq-service:latest
+      - name: Build and push t4k-cover-service
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: t4k-cover-service/Dockerfile
+          push: true
+          tags: huaouo/t4k-cover-service:latest
+      - name: Build and push t4k-video-service
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: t4k-video-service/Dockerfile
+          push: true
+          tags: huaouo/t4k-video-service:latest

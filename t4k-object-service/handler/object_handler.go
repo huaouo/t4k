@@ -46,6 +46,7 @@ func (h *ObjectHandler) Get(c *gin.Context, bucket string) {
 				Bucket: aws.String(bucket),
 				Key:    aws.String(filename),
 			})
+		defer w.Close()
 		if err != nil {
 			log.Printf("failed to get object: %v", err)
 		}

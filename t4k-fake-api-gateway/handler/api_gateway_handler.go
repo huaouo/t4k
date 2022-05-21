@@ -61,7 +61,7 @@ func (h *ApiGatewayHandler) ServeHTTP(respWriter http.ResponseWriter, req *http.
 	if _, ok := h.JwtVerifyWhitelist[req.URL.Path]; !ok {
 		tokenStr := req.URL.Query().Get("token")
 		if tokenStr == "" {
-			err := req.ParseMultipartForm(2 << 20)
+			err := req.ParseMultipartForm(10 << 20)
 			if err != nil {
 				log.Printf("unable to get token: %v", err)
 				http.Error(respWriter, "403 Forbidden", http.StatusForbidden)
