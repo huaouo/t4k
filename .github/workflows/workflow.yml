@@ -96,3 +96,10 @@ jobs:
           file: t4k-video-service/Dockerfile
           push: true
           tags: huaouo/t4k-video-service:latest
+      - name: Build and push t4k-fake-api-gateway
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: t4k-fake-api-gateway/Dockerfile
+          push: true
+          tags: huaouo/t4k-fake-api-gateway:latest

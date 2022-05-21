@@ -1,0 +1,345 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: t4k
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: t4k-config
+  namespace: t4k
+data:
+  PRIVATE_KEY_PATH: /key.pem
+  PUBLIC_KEY_PATH: /pub.pem
+  RDBMS_SERVICE_ADDR: rdbms-service.t4k.svc.local
+  RDBMS_SERVICE_LISTEN_PORT: 80
+  ACCOUNT_SERVICE_ADDR: account-service.t4k.svc.local
+  ACCOUNT_SERVICE_LISTEN_PORT: 80
+  VIDEO_SERVICE_ADDR: video-service.t4k.svc.local
+  VIDEO_SERVICE_LISTEN_PORT: 80
+  OBJECT_SERVICE_ADDR: object-service.t4k.svc.local
+  OBJECT_SERVICE_LISTEN_PORT: 80
+  MQ_SERVICE_ADDR: object-service.t4k.svc.local
+  MQ_SERVICE_LISTEN_PORT: 80
+  FAKE_API_SERVER_LISTEN_PORT: 80
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: t4k-secret
+  namespace: t4k
+data:
+  RDBMS_DSN: dDRrJTNBQHNxbEFkbWluMjAyMkB0Y3AlMjh0aWRiLXRpZGIudGlkYi1jbHVzdGVyLnN2Yy5sb2NhbCUzQTQwMDAlMjkvdDRrJTNGY2hhcnNldCUzRHV0ZjhtYjQlMjZwYXJzZVRpbWUlM0RUcnVl
+  AMQP_URL: YW1xcCUzQS8vdDRrJTNBQG1xQWRtaW4yMDIyQHJhYmJpdG1xLnJhYmJpdG1xLnN2Yy5sb2NhbCUzQTU2NzIvdDRr
+  S3_ACCESS_KEY: VEhuTlNVZVRWTlVLSnd3NQ==
+  S3_SECRET_KEY: N2RCVlpXMjdMT3UwMnhtTHVlZVpUaXpYZ1ZsREtKUEU=
+  S3_ENDPOINT: bWluaW8tMTY1MTgxNTQ2Ni5taW5pby5zdmMubG9jYWwlM0E5MDAw
+  S3_REGION: dXMtZWFzdC0x
+type: Opaque
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: t4k-cert
+  namespace: t4k
+data:
+  key: >-
+    LS0tLS1CRUdJTiBFQyBQUklWQVRFIEtFWS0tLS0tCk1IY0NBUUVFSUw2c1VHVGFDaTR2VUNSeDlWcndQdGtBd3JtVGVVOXprOVZDb2VaczZ0enFvQW9HQ0NxR1NNNDkKQXdFSG9VUURRZ0FFbGpKcHNLUXNGMGNydURVODhVZDhuNkNnNlpGUUtlYzVwT0ZzaFBDTDNMZXdaRjRSZ3NLVQo4VEQwMmtEc1RKQTZheEZQNi9XeE1xelMyZWp2V2tpL29nPT0KLS0tLS1FTkQgRUMgUFJJVkFURSBLRVktLS0tLQo=
+  pub: >-
+    LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUZrd0V3WUhLb1pJemowQ0FRWUlLb1pJemowREFRY0RRZ0FFbGpKcHNLUXNGMGNydURVODhVZDhuNkNnNlpGUQpLZWM1cE9Gc2hQQ0wzTGV3WkY0UmdzS1U4VEQwMmtEc1RKQTZheEZQNi9XeE1xelMyZWp2V2tpL29nPT0KLS0tLS1FTkQgUFVCTElDIEtFWS0tLS0tCg==
+type: Opaque
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: account-service
+  namespace: t4k
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: account-service
+  template:
+    metadata:
+      labels:
+        app: account-service
+    spec:
+      containers:
+        - name: account-service
+          image: huaouo/t4k-account-service
+          ports:
+            - containerPort: 80
+          envFrom:
+            - configMapRef:
+                name: t4k-config
+            - secretRef:
+                name: t4k-secret
+          volumeMounts:
+            - name: cert
+              mountPath: "/"
+              readOnly: true
+      volumes:
+        - name: cert
+          secret:
+            secretName: t4k-cert
+            items:
+              - key: key
+                path: key.pem
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: account-service
+  namespace: t4k
+spec:
+  selector:
+    app: account-service
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cover-service
+  namespace: t4k
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cover-service
+  template:
+    metadata:
+      labels:
+        app: cover-service
+    spec:
+      containers:
+        - name: cover-service
+          image: huaouo/t4k-cover-service
+          ports:
+            - containerPort: 80
+          envFrom:
+            - configMapRef:
+                name: t4k-config
+            - secretRef:
+                name: t4k-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cover-service
+  namespace: t4k
+spec:
+  selector:
+    app: cover-service
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fake-api-gateway
+  namespace: t4k
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fake-api-gateway
+  template:
+    metadata:
+      labels:
+        app: fake-api-gateway
+    spec:
+      containers:
+        - name: fake-api-gateway
+          image: huaouo/t4k-fake-api-gateway
+          ports:
+            - containerPort: 80
+          envFrom:
+            - configMapRef:
+                name: t4k-config
+            - secretRef:
+                name: t4k-secret
+          volumeMounts:
+            - name: cert
+              mountPath: "/"
+              readOnly: true
+      volumes:
+        - name: cert
+          secret:
+            secretName: t4k-cert
+            items:
+              - key: pub
+                path: pub.pem
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fake-api-gateway
+  namespace: t4k
+spec:
+  selector:
+    app: fake-api-gateway
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mq-service
+  namespace: t4k
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mq-service
+  template:
+    metadata:
+      labels:
+        app: mq-service
+    spec:
+      containers:
+        - name: mq-service
+          image: huaouo/t4k-mq-service
+          ports:
+            - containerPort: 80
+          envFrom:
+            - configMapRef:
+                name: t4k-config
+            - secretRef:
+                name: t4k-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mq-service
+  namespace: t4k
+spec:
+  selector:
+    app: mq-service
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: object-service
+  namespace: t4k
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: object-service
+  template:
+    metadata:
+      labels:
+        app: object-service
+    spec:
+      containers:
+        - name: object-service
+          image: huaouo/t4k-object-service
+          ports:
+            - containerPort: 80
+          envFrom:
+            - configMapRef:
+                name: t4k-config
+            - secretRef:
+                name: t4k-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: object-service
+  namespace: t4k
+spec:
+  selector:
+    app: object-service
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rdbms-service
+  namespace: t4k
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rdbms-service
+  template:
+    metadata:
+      labels:
+        app: rdbms-service
+    spec:
+      containers:
+        - name: rdbms-service
+          image: huaouo/t4k-rdbms-service
+          ports:
+            - containerPort: 80
+          envFrom:
+            - configMapRef:
+                name: t4k-config
+            - secretRef:
+                name: t4k-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rdbms-service
+  namespace: t4k
+spec:
+  selector:
+    app: rdbms-service
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: video-service
+  namespace: t4k
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: video-service
+  template:
+    metadata:
+      labels:
+        app: video-service
+    spec:
+      containers:
+        - name: video-service
+          image: huaouo/t4k-video-service
+          ports:
+            - containerPort: 80
+          envFrom:
+            - configMapRef:
+                name: t4k-config
+            - secretRef:
+                name: t4k-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: video-service
+  namespace: t4k
+spec:
+  selector:
+    app: video-service
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
